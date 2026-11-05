@@ -24,17 +24,16 @@ class Driver:
 
         return settings
 
-    def assignOptions(self, settings:dict,options):
+    def assignOptions(self, settings:dict,options): # not even going to attempt to figure out the type hint for this one
         
         for argument in settings.get("arguments",[]):
             options.add_argument(argument)
-
         for key, value in settings.get("capabilities",{}).items():
             setattr(options,key,value)
 
         return options
 
-    def assign_driver(self,options:dict):
+    def assign_driver(self,options:dict)->None:
 
         driver_name = options["driver"].lower()
 
@@ -89,5 +88,4 @@ class Driver:
                 url += self.combine_arguments(query_params)
             self.driver.get(f"{url}")
 
-x = Driver("src/API/Scraper/config.json")
-x.getPage("https://www.protondb.com/app/388410")
+
