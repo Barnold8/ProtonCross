@@ -7,9 +7,8 @@ class Driver:
     def __init__(self,config_path:str):
 
         self.settings = self.load_config(config_path)
-        self.driver   = self.assign_driver()
+        self.driver   = self.assign_driver(self.settings)
 
-        pass
 
     def load_config(self,path:str)-> None:
         
@@ -17,33 +16,53 @@ class Driver:
         
         try:
             with open(path,"r") as file:
-                settings = json.loads(file)
+                settings = json.load(file)
         except FileNotFoundError as FNFE:
             print(f"SCRAPER - load_config | Error: could not find file {path}")
             exit(1)
 
         return settings
 
-    def assign_driver(self,driver_name: str)->:
+    def assignOptions(self, settings:dict,options):
         
-        driver_name = driver_name.lower()
+        for argument in settings.get("arguments",[]):
+            options.add_argument(argument)
+
+        for key, value in settings.get("capabilities",{}).items():
+            setattr(options,key,value)
+
+        return options
+
+    def assign_driver(self,options:dict):
+
+        driver_name = options["driver"].lower()
 
         match driver_name:
 
             case "chrome":
-                self.driver = webdriver.Chrome()
+                self.driver = webdriver.Chrome(
+                        self.assignOptions(self.settings,webdriver.ChromeOptions())
+                        )
 
             case "firefox":
-                self.driver = webdriver.FireFox() 
+                self.driver = webdriver.Firefox(
+                        self.assignOptions(self.settings,webdriver.FirefoxOptions())
+) 
             
             case "edge":
-                self.driver = webdriver.Edge()
+                self.driver = webdriver.Edge(
+                        self.assignOptions(self.settings,webdriver.EdgeOptions())
+                        )
 
             case "ie":
-                self.driver = webdriver.Ie()
+                self.driver = webdriver.Ie(
+                        self.assignOptions(self.settings,webdriver.IeOptions())
+                )
 
             case "safari":
-                self.driver = webdriver.Safari()
+                self.driver = webdriver.Safari(
+                        assignOptions(self.settings,webdriver.SafariOptions())
+                        )
 
             case _:
                 print(f"SCRAPER - assign_driver | Warning: Could not find web driver {driver_name}, assinging chrome instead")
@@ -65,3 +84,4 @@ class Driver:
         else:
             self.driver.get(f"{url}")
 
+x = Driver("src/API/Scraper/config.json")

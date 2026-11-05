@@ -1,0 +1,16 @@
+{
+	"driver":"chrome",
+	
+	"arguments":{
+
+		"arguments": [
+        		"--headless=new"
+    		],
+		"capabilities": {
+        		"page_load_strategy": "eager",
+        		"accept_insecure_certs": false,
+			"platform_name" : "any"
+    		}
+	}
+
+}
