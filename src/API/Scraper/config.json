@@ -7,5 +7,8 @@
         	"page_load_strategy": "eager",
         	"accept_insecure_certs": false,
 		"platform_name" : "any"
-    		}
+    	},
+	"misc":{
+		"implicit_wait" : 5
+	}
 }

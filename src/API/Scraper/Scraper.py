@@ -1,11 +1,14 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from typing import List
+from Data import Game
 import json
 
 class Driver:
 
     def __init__(self,config_path:str):
-
+        
+        self.implicit_wait = 0
         self.settings = self.load_config(config_path)
         self.driver   = None
         self.assign_driver(self.settings)
@@ -30,6 +33,8 @@ class Driver:
             options.add_argument(argument)
         for key, value in settings.get("capabilities",{}).items():
             setattr(options,key,value)
+
+        self.implicit_wait = self.settings["misc"]["implicit_wait"]
 
         return options
 
@@ -88,4 +93,15 @@ class Driver:
                 url += self.combine_arguments(query_params)
             self.driver.get(f"{url}")
 
+    def composeGame(self,url:str,query_params: dict = None)->Game:
+        
+        self.getPage(url,query_params)        
+        self.driver.implicitly_wait(self.implicit_wait)
+    
+        print(self.driver.find_elements(By.TAG_NAME,"a"))
 
+        pass
+
+x = Driver("API/Scraper/config.json")
+
+x.composeGame("https://www.protondb.com/app/388410")
