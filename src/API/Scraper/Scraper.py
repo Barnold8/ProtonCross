@@ -93,15 +93,55 @@ class Driver:
                 url += self.combine_arguments(query_params)
             self.driver.get(f"{url}")
 
+    def manageDetails(self,driver)->None:
+        try:
+            details_hidden = self.driver.find_element(By.XPATH,".//*[contains(text(),'Hide Details')]")
+        except Exception as e:
+            details_hidden = self.driver.find_element(By.XPATH,".//*[contains(text(),'Show Details')]")
+            details_hidden.click()
+
+    def manageIsDeckVerified(self, element)->str:
+
+            types = ["verified","playable","unknown"]
+
+            parent = element.find_element(By.XPATH,"..")
+            parent_text = parent.text
+            parent_text_chunks = parent_text.split("\n") 
+            for chunk in parent_text_chunks:
+                if chunk.lower() in types:
+                    return chunk
+            return "unknown"
+
     def composeGame(self,url:str,query_params: dict = None)->Game:
-        
+    #        self.name                   = Done
+    #       self.status                 = Done
+    #      self.is_deck_verified       = Done ish
+    #     self.is_chromebook_ready    = None
+    #    self.details                = Done
+        #(By.xpath("//div[contains(text(),'"+expectedText+"')]")).
         self.getPage(url,query_params)        
         self.driver.implicitly_wait(self.implicit_wait)
     
-        print(self.driver.find_elements(By.TAG_NAME,"a"))
+        try:
+           
+            name = self.driver.find_element(By.XPATH,".//*[contains(@class,'GameInfo')]")
+            status = self.driver.find_element(By.XPATH,".//*[contains(@class,'MedalSummary')]")
+            is_deck_verified = self.manageIsDeckVerified(self.driver.find_element(By.XPATH,".//*[contains(text(),'Deck Verified Status')]"))
+            print(is_deck_verified)
+            is_chromebook_ready = self.driver.find_element(By.XPATH,".//*[contains(text(),'Chromebook ')]") 
 
-        pass
+            #details = self.driver.find_element(By.XPATH,".//*[contains(@class,'BorderedBox__Container')]") 
+            
+            #print(is_chromebook_ready.text)
+            #print(is_deck_verified.text)
+            #print(details.text)
+
+        except Exception as e:
+            print(f"SCRAPER - composeGame | Warning: Couldnt find an element. ErrMsg: {e}")
+         
+
 
 x = Driver("API/Scraper/config.json")
 
-x.composeGame("https://www.protondb.com/app/388410")
+#x.composeGame("https://www.protondb.com/app/388410")
+x.composeGame("https://www.protondb.com/app/1771300")

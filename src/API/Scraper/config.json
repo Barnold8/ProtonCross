@@ -1,7 +1,7 @@
 {
 	"driver":"chrome",
 	"arguments": [
-        	"--headless=new"
+        
     	],
 	"capabilities": {
         	"page_load_strategy": "eager",
