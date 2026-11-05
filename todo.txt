@@ -1,0 +1,3 @@
+Strictly keep API branch to grabbing information from proton DB
+
+CLI branch can essentially be a wrapper for API branch with integrations to steamAPI
