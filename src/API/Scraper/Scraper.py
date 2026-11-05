@@ -6,10 +6,11 @@ import json
 
 class Driver:
 
-    def __init__(self,config_path:str):
+    def __init__(self,config_path:str,xpath_path):
         
         self.implicit_wait = 0
         self.settings = self.load_config(config_path)
+        self.xpaths   = self.load_config(xpath_path)
         self.driver   = None
         self.assign_driver(self.settings)
 
@@ -52,7 +53,7 @@ class Driver:
             case "firefox":
                 self.driver = webdriver.Firefox(
                         self.assignOptions(self.settings,webdriver.FirefoxOptions())
-) 
+                        ) 
             
             case "edge":
                 self.driver = webdriver.Edge(
@@ -62,7 +63,7 @@ class Driver:
             case "ie":
                 self.driver = webdriver.Ie(
                         self.assignOptions(self.settings,webdriver.IeOptions())
-                )
+                        )
 
             case "safari":
                 self.driver = webdriver.Safari(
@@ -100,8 +101,8 @@ class Driver:
             
             details_hidden = self.driver.find_element(By.XPATH,".//*[contains(text(),'Show Details')]")
             details_hidden.click()
-        details = self.driver.find_element(By.XPATH,xPath) 
-        return details
+            details = self.driver.find_element(By.XPATH,xPath) 
+            return details
 
     def manageParentNode(self, element)->str:
         # This function is used to grab the status type for steam deck and chromebooks as found on the protondb website
@@ -117,32 +118,24 @@ class Driver:
         return "unknown"
 
     def composeGame(self,url:str,query_params: dict = None)->Game:
-    #    self.details                = Done ?
         self.getPage(url,query_params)        
         self.driver.implicitly_wait(self.implicit_wait)
     
         try:
            
-            name = self.driver.find_element(By.XPATH,".//*[contains(@class,'GameInfo')]")
-            status = self.driver.find_element(By.XPATH,".//*[contains(@class,'MedalSummary')]")
-            is_deck_verified = self.manageParentNode(self.driver.find_element(By.XPATH,".//*[contains(text(),'Deck Verified Status')]"))
-            is_chromebook_ready = self.manageParentNode(self.driver.find_element(By.XPATH,".//*[contains(text(),'Chromebook ')]")) 
+            name = self.driver.find_element(By.XPATH,self.xpaths["name"])
+            status = self.driver.find_element(By.XPATH,self.xpaths["status"])
+            is_deck_verified = self.manageParentNode(self.driver.find_element(By.XPATH,self.xpaths["is_deck_verified"]))
+            is_chromebook_ready = self.manageParentNode(self.driver.find_element(By.XPATH,self.xpaths["is_chromebook_ready"])) 
 
-            details = self.manageDetails(".//*[contains(@class,'BorderedBox__Cop')]")
-            print(details.text)
+            details = self.manageDetails(self.xpaths["details"])
 
+            return Game.Game(
+                name=name.text,
+                status=status.text,
+                is_deck_verified=is_deck_verified,
+                is_chromebook_ready=is_chromebook_ready,
+                details=details.text
+            )
         except Exception as e:
             print(f"SCRAPER - composeGame | Warning: Couldnt find an element. ErrMsg: {e}")
-         
-
-
-x = Driver("API/Scraper/config.json")
-
-#x.composeGame("https://www.protondb.com/app/388410")
-#x.composeGame("https://www.protondb.com/app/1771300")
-x.composeGame("https://www.protondb.com/app/322330")
-
-
-
-
-

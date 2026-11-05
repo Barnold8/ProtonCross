@@ -1,0 +1,7 @@
+{
+	"name":".//*[contains(@class,'GameInfo')]",
+	"status":".//*[contains(@class,'MedalSummary')]",
+	"is_deck_verified":".//*[contains(text(),'Deck Verified Status')]",
+	"is_chromebook_ready":".//*[contains(text(),'Chromebook ')]",
+	"details":".//*[contains(@class,'BorderedBox__Cop')]"
+}
