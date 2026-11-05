@@ -7,7 +7,8 @@ class Driver:
     def __init__(self,config_path:str):
 
         self.settings = self.load_config(config_path)
-        self.driver   = self.assign_driver(self.settings)
+        self.driver   = None
+        self.assign_driver(self.settings)
 
 
     def load_config(self,path:str)-> None:
@@ -67,7 +68,7 @@ class Driver:
             case _:
                 print(f"SCRAPER - assign_driver | Warning: Could not find web driver {driver_name}, assinging chrome instead")
 
-    def combine_arguments(self, args: dict)->str:
+    def combine_arguments(self, args: dict)->str: # turns out protondb doesnt use bloomin URL arguments
 
         arg_str = "/?"
 
@@ -76,12 +77,17 @@ class Driver:
 
         return arg_str[:-1]
 
-    def getPage(self,url:str, query_params: dict)->None:
+    def getPage(self,url:str, query_params: dict = None)->None:
 
         if self.driver == None:
             print(f"SCRAPER - getPage | Error: self.driver was not initiated")
             exit(1)
         else:
+
+            request_url = url
+            if query_params != None:
+                url += self.combine_arguments(query_params)
             self.driver.get(f"{url}")
 
 x = Driver("src/API/Scraper/config.json")
+x.getPage("https://www.protondb.com/app/388410")
